@@ -1,12 +1,77 @@
-
 #include <unordered_map>
 #include <algorithm>
 
 #include "BridgeFinder.hpp"
 
+class DeterminedOneBridgeVisitor : public Visitor {
+public:
+    DeterminedOneBridgeVisitor(const UndirectedGraph& graph)
+    : m_graph(graph)
+    , m_time(0) {
+        m_earliest_node.resize(graph.getVertexCount());
+        m_discovery_time.resize(graph.getVertexCount());
+        m_parent.resize(graph.getVertexCount());
+    }
+
+    void onEnter(const Vertex& root, const Vertex& parent) override {
+        m_discovery_time[root] = m_earliest_node[root] = m_time++;
+        m_parent[root] = parent;
+    }
+
+    void onLeave(const Vertex& root, const Vertex& parent) override {
+        if (parent < m_graph.getVertexCount()) {
+            m_earliest_node[parent] = std::min(m_earliest_node[root], m_earliest_node[parent]);
+        }
+
+        for (auto& neighbour : m_graph.getNeighbours(root)) {
+            if (neighbour == parent) {
+                continue;
+            }
+
+            m_earliest_node[root] = std::min(m_earliest_node[root], m_earliest_node[neighbour]);
+            m_earliest_node[root] = std::min(m_earliest_node[root], m_discovery_time[neighbour]);
+        }
+    }
+
+    const std::vector<size_t>& getEarliestNode() const {
+        return m_earliest_node;
+    }
+
+    const std::vector<size_t>& getDiscoveryTime() const {
+        return m_discovery_time;
+    }
+
+    const std::vector<Vertex>& getParents() const {
+        return m_parent;
+    }
+
+private:
+    const UndirectedGraph& m_graph;
+
+    size_t m_time;
+    std::vector<size_t> m_earliest_node;
+    std::vector<size_t> m_discovery_time;
+    std::vector<Vertex> m_parent;
+};
+
 std::vector<Edge>  findOneBridgeFast(const UndirectedGraph& graph) {
-    // assert(false && "Not implemented yet");
-    return {};
+    DeterminedOneBridgeVisitor visitor(graph);
+    dfs(graph, 0, visitor);
+
+    auto& earliest_nodes = visitor.getEarliestNode();
+    auto& discovery_time = visitor.getDiscoveryTime();
+    auto& parents = visitor.getParents();
+    std::vector<Edge> bridges;
+    for (size_t vertex = 0; vertex < graph.getVertexCount(); ++vertex) {
+        for (const auto& neighbour : graph.getNeighbours(vertex)) {
+            if (earliest_nodes[neighbour] > discovery_time[vertex] && parents[vertex] != neighbour) {
+                Edge edge = vertex < neighbour ? Edge{vertex, neighbour} : Edge{neighbour, vertex};
+                bridges.push_back(edge);
+            }
+        }
+    }
+
+    return bridges;
 }
 
 // Assumption: access to edges via pairs like (v1, v2) where v1 < v2

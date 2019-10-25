@@ -54,11 +54,10 @@ TEST_CASE("Randomized one bridge works", "two_randomized") {
 
 TEST_CASE("Determined one bridge works", "two_randomized") {
     for (const auto& data : test_data) {
-    TestGraph g(data.input);
-    auto bridges = findOneBridgeFast(g);
+        TestGraph g(data.input);
+        auto bridges = findOneBridgeFast(g);
 
-    REQUIRE(Equal(data.expected, bridges));
-}
+        REQUIRE(Equal(data.expected, bridges));
+    }
 }
 
-// TODO: add determined algoritms tests

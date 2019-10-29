@@ -1,11 +1,9 @@
 #pragma once
 
 #include <vector>
-#include <assert.h>
+#include <cassert>
 
 namespace Utils {
-
-
 
 template <class Container>
 Container count_sort(const Container& container, size_t max) {

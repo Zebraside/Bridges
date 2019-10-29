@@ -1,10 +1,12 @@
 #include <set>
+#include <map>
 
 #include <catch.hpp>
 
 #include <graph.hpp>
 #include <BridgeFinder.hpp>
-#include <map>
+#include <graph_generator.hpp>
+#include <bencmark.hpp>
 
 #include "common.hpp"
 
@@ -43,7 +45,7 @@ std::vector<TestResult> test_data = {
         {{{1, 2, 3, 4}, {}, {}, {}, {}}, {{0, 1}, {0, 2}, {0, 3}, {0, 4}}} // multiple bridges
 };
 
-TEST_CASE("Randomized one bridge works", "two_randomized") {
+TEST_CASE("Randomized one bridge works", "one_randomized") {
     for (const auto& data : test_data) {
         TestGraph g(data.input);
         auto bridges = findOneBridgeRandomized(g);
@@ -52,12 +54,45 @@ TEST_CASE("Randomized one bridge works", "two_randomized") {
     }
 }
 
-TEST_CASE("Determined one bridge works", "two_randomized") {
+TEST_CASE("Determined one bridge works", "one_determined") {
     for (const auto& data : test_data) {
         TestGraph g(data.input);
         auto bridges = findOneBridgeFast(g);
 
         REQUIRE(Equal(data.expected, bridges));
+    }
+}
+
+TEST_CASE("Stress cross test") {
+    GraphUtils::GraphGenerator graph_generator({1000, 5000, 1, 48});
+
+    for (size_t i = 0; i < 100; ++i) {
+        auto graph = graph_generator.generateGraph();
+        std::cout << graph->getVertexCount() << std::endl;
+        auto randomized = findOneBridgeRandomized(*graph);
+        auto determined = findOneBridgeFast(*graph);
+
+        REQUIRE(Equal(determined, randomized));
+    }
+}
+
+TEST_CASE("Bench") {
+    GraphUtils::GraphGenerator graph_generator({13000, 15000, 1, 48});
+
+    for (size_t i = 0; i < 100; ++i) {
+        auto graph = graph_generator.generateGraph();
+        std::cout << graph->getVertexCount() << std::endl;
+        std::vector<Edge> randomized;
+        std::vector<Edge> determined;
+
+        auto f = [&]() {
+            randomized = findOneBridgeRandomized(*graph);
+            determined = findOneBridgeFast(*graph);
+        };
+        auto exec_time = Benchmark::measureExecutionTime(f);
+        std::cout << graph->getVertexCount() << " " << randomized.size() << " " << exec_time << std::endl;
+
+        REQUIRE(Equal(determined, randomized));
     }
 }
 

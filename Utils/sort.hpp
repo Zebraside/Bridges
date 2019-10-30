@@ -32,18 +32,19 @@ void count_sort(Container& container, size_t max, Func modifier) {
     std::swap(container, result);
 }
 
-template <class Container>
-void radix_sort(Container& container) {
+template <class Container, class Function>
+void radix_sort(Container& container, Function function) {
     constexpr short bit_shift = 16;
     short shift_value = 0;
-    size_t mask = 15;
+    size_t mask = 65535;
+    static_assert(sizeof(decltype(function(container[0]))) % (bit_shift / 8) == 0);
 
-    auto comparator = [&mask, &shift_value](auto value) {
-        return (value & mask) >> shift_value;
+    auto comparator = [&](const auto& value) {
+        return (function(value) & mask) >> shift_value;
     };
 
     size_t max_value = (~(0llu) & mask);
-    for (size_t i = 0; i < sizeof(decltype(container[0])) / (bit_shift / 8); ++i) {
+    for (size_t i = 0; i < sizeof(decltype(function(container[0]))) / (bit_shift / 8); ++i) {
         count_sort(container, max_value, comparator);
         mask <<= bit_shift;
         shift_value += bit_shift;

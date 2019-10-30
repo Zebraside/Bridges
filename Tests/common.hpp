@@ -12,3 +12,18 @@ public:
 private:
     std::vector<std::vector<GraphUtils::Vertex>> m_list;
 };
+
+template <class T>
+static bool Equal(const T& actual, const T& expected) {
+    if (actual.size() != expected.size()) {
+        return false;
+    }
+
+    for (size_t i = 0; i < actual.size(); ++i) {
+        if (actual[i] != expected[i]) {
+            return false;
+        }
+    }
+
+    return true;
+}

@@ -68,7 +68,6 @@ TEST_CASE("Stress cross test") {
 
     for (size_t i = 0; i < 100; ++i) {
         auto graph = graph_generator.generateGraph();
-        std::cout << graph->getVertexCount() << std::endl;
         auto randomized = findOneBridgeRandomized(*graph);
         auto determined = findOneBridgeFast(*graph);
 
@@ -90,7 +89,6 @@ TEST_CASE("Bench") {
             determined = findOneBridgeFast(*graph);
         };
         auto exec_time = Benchmark::measureExecutionTime(f);
-        std::cout << graph->getVertexCount() << " " << randomized.size() << " " << exec_time << std::endl;
 
         REQUIRE(Equal(determined, randomized));
     }

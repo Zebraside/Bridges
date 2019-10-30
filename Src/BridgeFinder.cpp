@@ -131,20 +131,6 @@ private:
         getEdgeValue(from, to) = value;
     }
 
-//    static bool isUndirected(const UndirectedGraph& graph) {
-//        for (size_t vertex = 0; vertex < graph.getVertexCount(); ++vertex) {
-//            const auto& neighbours = graph.getNeighbours(vertex);
-//            for (const auto& neighbour : neighbours) {
-//                const auto& neighbour_neighbours = graph.getNeighbours(neighbour);
-//                auto it = std::find(neighbour_neighbours.begin(), neighbour_neighbours.end(), vertex);
-//                if (it == neighbour_neighbours.end())
-//                    return false;
-//            }
-//        }
-//
-//        return true;
-//    }
-
     std::unordered_map<size_t, std::unordered_map<size_t, size_t>> edges; // edge representation works only with unordered graphs
     const UndirectedGraph& m_graph;
 };

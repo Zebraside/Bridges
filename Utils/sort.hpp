@@ -2,6 +2,7 @@
 
 #include <vector>
 #include <cassert>
+#include <iostream>
 
 namespace Utils {
 
@@ -32,11 +33,21 @@ void count_sort(Container& container, size_t max, Func modifier) {
     std::swap(container, result);
 }
 
+constexpr size_t getMaxValue(unsigned short bit_size) {
+    size_t value = 1;
+    for (size_t i = 1; i < bit_size; ++i) {
+        value <<= 1;
+        value += 1;
+    }
+
+    return value;
+}
+
 template <class Container, class Function>
 void radix_sort(Container& container, Function function) {
     constexpr short bit_shift = 16;
     short shift_value = 0;
-    size_t mask = 65535;
+    size_t mask = getMaxValue(bit_shift);
     static_assert(sizeof(decltype(function(container[0]))) % (bit_shift / 8) == 0);
 
     auto comparator = [&](const auto& value) {

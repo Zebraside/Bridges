@@ -4,8 +4,9 @@
 
 #include <sort.hpp>
 #include <random_generator.hpp>
+#include <bencmark.hpp>
 
-#include <common.hpp>
+#include "common.hpp"
 
 struct TestStruct {
     size_t idx;
@@ -19,6 +20,14 @@ bool operator!= (const TestStruct& left, const TestStruct& right) {
 
 bool operator< (const TestStruct& left, const TestStruct& right) {
     return left.value < right.value;
+}
+
+template <class T>
+void print(const T& container) {
+    for (const auto& value : container) {
+        std::cout << value << " ";
+    }
+    std::cout << std::endl;
 }
 
 TEST_CASE("Radix simple test") {

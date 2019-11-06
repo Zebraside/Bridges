@@ -4,6 +4,8 @@
 
 #include <graph.hpp>
 #include <BridgeFinder.hpp>
+#include <graph_generator.hpp>
+#include <bencmark.hpp>
 
 #include "common.hpp"
 
@@ -100,3 +102,20 @@ TEST_CASE("Two bridges works for multiple variants", "randomized" ) {
     std::vector<std::vector<Edge>> expected = {{{0,1}, {1, 2}, {0, 2}}};
     REQUIRE(Equal(expected, bridge_groups));
 }
+
+//TEST_CASE("Two Bench") {
+//    GraphUtils::GraphGenerator graph_generator({130000, 150000, 1, 600});
+//
+//    for (size_t i = 0; i < 1; ++i) {
+//        auto graph = graph_generator.generateGraph();
+//
+//        std::vector<std::vector<Edge>> randomized;
+//
+//        auto r = [&]() {
+//            randomized = findTwoBridgeRandomized(*graph);
+//        };
+//
+//        auto randomized_exec_time = Benchmark::measureExecutionTime(r);
+//        std::cout << graph->getVertexCount() << " " << randomized_exec_time << std::endl;
+//    }
+//}

@@ -75,22 +75,26 @@ TEST_CASE("Stress cross test") {
     }
 }
 
-TEST_CASE("Bench") {
-    GraphUtils::GraphGenerator graph_generator({13000, 15000, 1, 48});
-
-    for (size_t i = 0; i < 100; ++i) {
-        auto graph = graph_generator.generateGraph();
-        std::cout << graph->getVertexCount() << std::endl;
-        std::vector<Edge> randomized;
-        std::vector<Edge> determined;
-
-        auto f = [&]() {
-            randomized = findOneBridgeRandomized(*graph);
-            determined = findOneBridgeFast(*graph);
-        };
-        auto exec_time = Benchmark::measureExecutionTime(f);
-
-        REQUIRE(Equal(determined, randomized));
-    }
-}
+//TEST_CASE("Bench") {
+//    GraphUtils::GraphGenerator graph_generator({13000, 15000, 1, 100});
+//
+//    for (size_t i = 0; i < 100; ++i) {
+//        auto graph = graph_generator.generateGraph();
+//
+//        std::vector<Edge> randomized;
+//        std::vector<Edge> determined;
+//
+//        auto d = [&]() {
+//            determined = findOneBridgeFast(*graph);
+//        };
+//
+//        auto r = [&]() {
+//            randomized = findOneBridgeRandomized(*graph);
+//        };
+//        auto determined_exec_time = Benchmark::measureExecutionTime(d);
+//        auto randomized_exec_time = Benchmark::measureExecutionTime(r);
+//        std::cout << graph->getVertexCount() << " " << determined_exec_time << " " << randomized_exec_time << std::endl;
+//        REQUIRE(Equal(determined, randomized));
+//    }
+//}
 

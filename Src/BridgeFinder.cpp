@@ -1,6 +1,8 @@
 #include <unordered_map>
 #include <algorithm>
 
+#include <sort.hpp>
+
 #include "BridgeFinder.hpp"
 
 class DeterminedOneBridgeVisitor : public Visitor {
@@ -10,7 +12,7 @@ public:
     , m_time(0) {
         m_earliest_node.resize(graph.getVertexCount());
         m_discovery_time.resize(graph.getVertexCount());
-        m_parent.resize(graph.getVertexCount());
+        m_parent.resize(graph.getVertexCount(), graph.getVertexCount());
     }
 
     void onEnter(const Vertex& root, const Vertex& parent) override {
@@ -45,6 +47,7 @@ public:
         return m_parent;
     }
 
+    std::vector<bool> m_visited;
 private:
     const UndirectedGraph& m_graph;
 
@@ -131,7 +134,7 @@ private:
         getEdgeValue(from, to) = value;
     }
 
-    std::unordered_map<size_t, std::unordered_map<size_t, size_t>> edges; // edge representation works only with unordered graphs
+    RandomizedBridgeVisitor::EdgeList edges; // edge representation works only with unordered graphs
     const UndirectedGraph& m_graph;
 };
 
@@ -160,9 +163,11 @@ std::vector<std::vector<Edge>> findTwoBridgeRandomized(const UndirectedGraph& gr
     auto edges = visitor.getEdges();
     assert(!edges.empty());
 
-    // TODO: replace with radix sort
-    std::sort(edges.begin(), edges.end(), [&visitor](const Edge& left, const Edge& right)
-    {return visitor.getEdgeValue(left.first, left.second) < visitor.getEdgeValue(right.first, right.second);});
+// TODO: compare with different sort functions
+//    std::sort(edges.begin(), edges.end(), [&visitor](const Edge& left, const Edge& right)
+//    {return visitor.getEdgeValue(left.first, left.second) < visitor.getEdgeValue(right.first, right.second);});
+    Utils::radix_sort(edges, [&visitor](const Edge& edge) {return visitor.getEdgeValue(edge.first, edge.second);});
+
     std::vector<std::vector<Edge>> bridges;
 
     bridges.push_back({edges[0]});

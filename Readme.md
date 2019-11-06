@@ -2,3 +2,5 @@
 
 ## TODO
 * write graph generator
+* bench implementations
+* bench different sorting functions

@@ -62,4 +62,15 @@ void radix_sort(Container& container, Function function) {
     }
 }
 
+template <class Container, class Function>
+void bucketSort(Container& container, Function hasher) {
+    constexpr static size_t bucket_size = 256;
+    Container result;
+    result.resize(container.size());
+
+    for (const auto& value : container) {
+
+    }
+}
+
 } // Utils

@@ -30,9 +30,32 @@ public:
         return min + (dist(rng) % (max - min));
     }
 
+private:
     std::random_device dev;
     mutable std::mt19937 rng;
     mutable std::uniform_int_distribution<DataType> dist;
+};
+
+template <typename DataType>
+class FlaotingPointGenerator : public RandomGenerator<DataType> {
+public:
+    FlaotingPointGenerator()
+            : rng(dev())
+            , dist(std::numeric_limits<DataType>::min(), std::numeric_limits<DataType>::max()) {
+        static_assert(std::is_floating_point<DataType>::value);
+    }
+
+    DataType generateValue(DataType min, DataType max) const override {
+        if (min == max) {
+            return min;
+        }
+
+        return min + (dist(rng) / (std::numeric_limits<DataType>::max() / max));
+    }
+private:
+    std::random_device dev;
+    mutable std::mt19937 rng;
+    mutable std::uniform_real_distribution<DataType> dist;
 };
 
 } // Utils

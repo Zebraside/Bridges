@@ -64,7 +64,7 @@ TEST_CASE("Determined one bridge works", "one_determined") {
 }
 
 TEST_CASE("Stress cross test") {
-    GraphUtils::GraphGenerator graph_generator({1000, 5000, 1, 48});
+    GraphUtils::GraphGenerator graph_generator({0.002f, 10000});
 
     for (size_t i = 0; i < 100; ++i) {
         auto graph = graph_generator.generateGraph();

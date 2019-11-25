@@ -10,6 +10,7 @@ TestGraph::TestGraph(const std::vector<std::vector<GraphUtils::Vertex>>& list) :
         auto& neighbours = getNeighbours(vertex);
         std::vector<GraphUtils::Vertex> missed;
         for (const GraphUtils::Vertex& neighbour : neighbours) {
+            // TODO: rewrite tests to Undirected graph and edge lists
             if (std::find(getNeighbours(neighbour).begin(), getNeighbours(neighbour).end(), vertex) == getNeighbours(neighbour).end()) {
                 m_list[neighbour].push_back(vertex);
             }
@@ -24,4 +25,9 @@ const std::vector<GraphUtils::Vertex>& TestGraph::getNeighbours(GraphUtils::Vert
 
 size_t TestGraph::getVertexCount() const {
     return m_list.size();
+}
+
+size_t TestGraph::getEdgeCount() const {
+    throw std::logic_error("Not implemented");
+    return 0;
 }

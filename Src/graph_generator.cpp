@@ -7,7 +7,7 @@
 
 namespace GraphUtils {
 
-class BaseGraph :  public UndirectedGraph {
+class BaseGraph :  public IGraph {
 public:
     BaseGraph(std::vector<std::vector<Vertex>> adjacency_list) : m_list(adjacency_list) {
     }
@@ -43,28 +43,21 @@ static std::vector<Vertex> onlyUnique(const std::vector<Vertex>& vertexes) {
     return std::vector<Vertex>(unique.begin(), unique.end());
 }
 
-std::unique_ptr<GraphUtils::UndirectedGraph> GraphGenerator::generateGraph() const {
-    Utils::FixedPointGenerator<size_t> generator;
-    size_t vertex_count = generator.generateValue(graph_parameters_.min_vertex_count, graph_parameters_.max_vertex_count);
-    std::vector<std::vector<Vertex>> adjacency_list(vertex_count);
-    for (size_t i = 0; i < vertex_count - 1; ++i) {
-        size_t neighbours_count = generator.generateValue(graph_parameters_.min_neighbours_count, graph_parameters_.max_neighbours_count);
-        adjacency_list[i] = generateRandomUniqueSequence(neighbours_count, i + 1, vertex_count - 1);
-    }
+std::unique_ptr<GraphUtils::IGraph> GraphGenerator::generateGraph() const {
+    Utils::FlaotingPointGenerator<float> generator;
 
-    for (size_t i = 0; i < vertex_count; ++i) {
-        for (const auto& n : adjacency_list[i]) {
-            adjacency_list[n].push_back(i);
+    std::vector<GraphUtils::Edge > edge_list;
+
+    for (size_t u = 0; u < graph_parameters_.vertex_count; ++u) {
+        for (size_t v = u + 1; v < graph_parameters_.vertex_count; ++v) {
+            auto prob = generator.generateValue(0.0f, 1.f);
+            if (prob < graph_parameters_.edge_probability) {
+                edge_list.emplace_back(u, v);
+            }
         }
     }
 
-    for (size_t i = 0; i < vertex_count; ++i) {
-        adjacency_list[i] = onlyUnique(adjacency_list[i]);
-    }
-
-    assert(std::all_of(adjacency_list.begin(), adjacency_list.end(), [](const std::vector<Vertex> neighbours){return !neighbours.empty();}));
-
-    return std::unique_ptr<UndirectedGraph>(new BaseGraph(adjacency_list));
+    return std::unique_ptr<IGraph>(new UndirectedGraph(edge_list));
 }
 
 } // GraphUtils

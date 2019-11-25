@@ -11,7 +11,7 @@ using namespace GraphUtils;
 namespace {
 class TestVisitor : public GraphUtils::Visitor {
 public:
-    TestVisitor(const UndirectedGraph& graph) {
+    TestVisitor(const IGraph& graph) {
         enter_count.resize(graph.getVertexCount());
         leave_count.resize(graph.getVertexCount());
     }

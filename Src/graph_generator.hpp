@@ -4,20 +4,16 @@
 
 namespace GraphUtils {
 
-
-
 class GraphGenerator {
     struct GraphParametes {
-        size_t min_vertex_count;
-        size_t max_vertex_count;
-        size_t min_neighbours_count;
-        size_t max_neighbours_count;
+        float edge_probability;
+        size_t vertex_count;
     };
 
 public:
-    GraphGenerator(GraphParametes);
+    GraphGenerator(GraphParametes parameters);
 
-    std::unique_ptr<GraphUtils::UndirectedGraph> generateGraph() const;
+    std::unique_ptr<GraphUtils::IGraph> generateGraph() const;
 
 private:
     GraphParametes graph_parameters_;

@@ -7,7 +7,7 @@
 
 class DeterminedOneBridgeVisitor : public Visitor {
 public:
-    DeterminedOneBridgeVisitor(const UndirectedGraph& graph)
+    DeterminedOneBridgeVisitor(const IGraph& graph)
     : m_graph(graph)
     , m_time(0) {
         m_earliest_node.resize(graph.getVertexCount());
@@ -49,7 +49,7 @@ public:
 
     std::vector<bool> m_visited;
 private:
-    const UndirectedGraph& m_graph;
+    const IGraph& m_graph;
 
     size_t m_time;
     std::vector<size_t> m_earliest_node;
@@ -57,7 +57,7 @@ private:
     std::vector<Vertex> m_parent;
 };
 
-std::vector<Edge>  findOneBridgeFast(const UndirectedGraph& graph) {
+std::vector<Edge>  findOneBridgeFast(const IGraph& graph) {
     DeterminedOneBridgeVisitor visitor(graph);
     dfs(graph, 0, visitor);
 
@@ -82,11 +82,12 @@ class RandomizedBridgeVisitor : public Visitor {
 public:
     using EdgeList = std::unordered_map<size_t, std::unordered_map<size_t, size_t>>;
 
-    RandomizedBridgeVisitor(const UndirectedGraph& graph) : m_graph(graph) {
+    RandomizedBridgeVisitor(const IGraph& graph) : m_graph(graph) {
         for (size_t vertex = 0; vertex < graph.getVertexCount(); ++vertex) {
-            for (const auto& neighbour : graph.getNeighbours(vertex)) {
-                assert(vertex != neighbour);
+            size_t counter = 0;
+            for (const auto neighbour : graph.getNeighbours(vertex)) {
                 setEdgeValue(vertex, neighbour, std::rand()); // TODO: generate normal random value
+                ++counter;
             }
         }
 
@@ -135,10 +136,10 @@ private:
     }
 
     RandomizedBridgeVisitor::EdgeList edges; // edge representation works only with unordered graphs
-    const UndirectedGraph& m_graph;
+    const IGraph& m_graph;
 };
 
-std::vector<Edge> findOneBridgeRandomized(const UndirectedGraph& graph) {
+std::vector<Edge> findOneBridgeRandomized(const IGraph& graph) {
     assert(graph.getVertexCount() != 0);
 
     RandomizedBridgeVisitor visitor(graph);
@@ -154,7 +155,7 @@ std::vector<Edge> findOneBridgeRandomized(const UndirectedGraph& graph) {
     return bridges;
 }
 
-std::vector<std::vector<Edge>> findTwoBridgeRandomized(const UndirectedGraph& graph) {
+std::vector<std::vector<Edge>> findTwoBridgeRandomized(const IGraph& graph) {
     assert(graph.getVertexCount() != 0);
 
     RandomizedBridgeVisitor visitor(graph);

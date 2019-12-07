@@ -39,5 +39,6 @@ struct Visitor {
 };
 
 void dfs(const IGraph& graph, const Vertex& start, Visitor& visitor);
+void visitAll(const IGraph& graph, Visitor& visitor);
 
 } // GraphUtils

@@ -10,9 +10,7 @@ void dfsStackImpl(const Vertex& root, const Vertex& /*parent*/ , std::vector<boo
     std::stack<Vertex> vertex_to_visit;
     vertex_to_visit.push(root);
     std::vector<bool> exited(graph.getVertexCount());
-
     std::vector<Vertex> parent(graph.getVertexCount(), graph.getVertexCount());
-
 
     while (!vertex_to_visit.empty()) {
         const auto& current_vertex = vertex_to_visit.top();
@@ -55,7 +53,14 @@ void dfs(const IGraph& graph, const Vertex& start, Visitor& visitor) {
     dfsStackImpl(start, graph.getVertexCount() + 1, visited, graph, visitor);
 }
 
-// TODO: may cause performance problems
+void visitAll(const IGraph& graph, Visitor& visitor) {
+    std::vector<bool> visited(graph.getVertexCount());
+    for (size_t vertex = 0; vertex < visited.size(); ++vertex) {
+        if (!visited[vertex])
+            dfsStackImpl(vertex, graph.getVertexCount() + 1, visited, graph, visitor);
+    }
+}
+
 const std::vector<Vertex>& UndirectedGraph::getNeighbours(Vertex vertex) const {
     assert(vertex < adjacency_list_.size());
     return adjacency_list_[vertex];

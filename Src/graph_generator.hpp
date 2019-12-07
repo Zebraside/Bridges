@@ -5,18 +5,18 @@
 namespace GraphUtils {
 
 class GraphGenerator {
-    struct GraphParametes {
+public:
+    struct Parameters {
         float edge_probability;
         size_t vertex_count;
     };
 
-public:
-    GraphGenerator(GraphParametes parameters);
+    GraphGenerator(const Parameters& parameters);
 
     std::unique_ptr<GraphUtils::IGraph> generateGraph() const;
 
 private:
-    GraphParametes graph_parameters_;
+    Parameters graph_parameters_;
 };
 
 } // GraphUtils

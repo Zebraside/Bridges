@@ -25,7 +25,7 @@ private:
     std::vector<std::vector<Vertex>> m_list;
 };
 
-GraphGenerator::GraphGenerator(GraphParametes parameters) : graph_parameters_(parameters) {
+GraphGenerator::GraphGenerator(const Parameters& parameters) : graph_parameters_(parameters) {
 }
 
 static std::vector<size_t> generateRandomUniqueSequence(size_t max_size, size_t min_idx, size_t max_idx) {
@@ -47,12 +47,16 @@ std::unique_ptr<GraphUtils::IGraph> GraphGenerator::generateGraph() const {
     Utils::FlaotingPointGenerator<float> generator;
 
     std::vector<GraphUtils::Edge > edge_list;
-
+    edge_list.reserve(graph_parameters_.vertex_count * graph_parameters_.vertex_count / 2.0 * graph_parameters_.edge_probability);
     for (size_t u = 0; u < graph_parameters_.vertex_count; ++u) {
         for (size_t v = u + 1; v < graph_parameters_.vertex_count; ++v) {
             auto prob = generator.generateValue(0.0f, 1.f);
             if (prob < graph_parameters_.edge_probability) {
-                edge_list.emplace_back(u, v);
+                if (edge_list.size() + 10 > edge_list.max_size()) {
+                    int x = 42;
+                }
+                
+                edge_list.push_back({u, v});
             }
         }
     }

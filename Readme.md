@@ -3,3 +3,8 @@
 ## TODO
 * bench implementations
 * bench different sorting functions
+
+## Results layout
+vertex count edge count edge probability
+one bridge determied algorithm time one bridge randomized algorithm time
+two bridge randomized algorithm time

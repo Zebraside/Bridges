@@ -3,6 +3,7 @@
 ## TODO
 * bench implementations
 * bench different sorting functions
+* Refactor output layout
 
 ## Results layout
 vertex count edge count edge probability

@@ -80,7 +80,7 @@ std::vector<Edge>  findOneBridgeFast(const IGraph& graph) {
 // Assumption: access to edges via pairs like (v1, v2) where v1 < v2
 class RandomizedBridgeVisitor : public Visitor {
 public:
-    using EdgeList = std::vector<std::unordered_map<size_t, size_t>>;
+    using EdgeList = std::vector<std::unordered_map<Vertex, uint32_t>>;
 
     RandomizedBridgeVisitor(const IGraph& graph) : m_graph(graph) {
         edges.resize(m_graph.getVertexCount());
@@ -113,21 +113,27 @@ public:
         setEdgeValue(root, parent, vertexSum);
     }
 
-    std::vector<Edge> getEdges() const {
-        std::vector<Edge> edges_list;
+    std::vector<WeightedEdge> getEdges() const {
+        std::vector<WeightedEdge> edges_list;
+        edges_list.reserve(m_graph.getEdgeCount());
+
         for (size_t from = 0; from < m_graph.getVertexCount(); ++from) {
             auto& neighbours = m_graph.getNeighbours(from);
             for (auto to : neighbours) {
                 if (from < to) {
-                    edges_list.emplace_back(from, to);
+                    edges_list.push_back({{from, to}, this->getEdgeValue(from, to)});
                 }
             }
         }
         return std::move(edges_list);
     }
 
-    size_t& getEdgeValue(const Vertex& from, const Vertex& to) {
+    uint32_t& getEdgeValue(const Vertex& from, const Vertex& to) {
         return (from < to ? edges[from][to] : edges[to][from]); // TODO: potentialy dangerous
+    }
+
+    size_t getEdgeValue(const Vertex& from, const Vertex& to) const {
+        return (from < to ? edges[from][to] : edges[to][from]);
     }
 
 private:
@@ -135,7 +141,7 @@ private:
         getEdgeValue(from, to) = value;
     }
 
-    RandomizedBridgeVisitor::EdgeList edges; // edge representation works only with unordered graphs
+    mutable RandomizedBridgeVisitor::EdgeList edges; // edge representation works only with unordered graphs
     const IGraph& m_graph;
 };
 
@@ -151,8 +157,8 @@ std::vector<Edge> findOneBridgeRandomized(const IGraph& graph) {
     std::vector<Edge> bridges;
     bridges.reserve(edges.size());
     for (const auto& edge : edges) {
-        if (visitor.getEdgeValue(edge.first, edge.second) == 0) {
-            bridges.push_back({edge.first, edge.second});
+        if (edge.weight == 0) {
+            bridges.push_back({edge.edge});
         }
     }
 
@@ -170,25 +176,23 @@ std::vector<std::vector<Edge>> findTwoBridgeRandomized(const IGraph& graph) {
     std::vector<std::vector<Edge>> bridges;
     std::cout << edges.size() << std::endl;
 // TODO: compare with different sort functions
-//    std::sort(edges.begin(), edges.end(), [&visitor](const Edge& left, const Edge& right)
-//    {return visitor.getEdgeValue(left.first, left.second) < visitor.getEdgeValue(right.first, right.second);});
-//    // Utils::radix_sort(edges, [&visitor](const Edge& edge) {return visitor.getEdgeValue(edge.first, edge.second);});
-//
-//    std::vector<std::vector<Edge>> bridges;
-//    bridges.reserve(edges.size());
-//
-//    bridges.push_back({edges[0]});
-//    size_t current_value = visitor.getEdgeValue(edges[0].first, edges[0].second);
-//    for (size_t i = 1; i < edges.size(); ++i) {
-//        const auto& edge = edges[i];
-//        if (visitor.getEdgeValue(edge.first, edge.second) == current_value) {
-//            bridges.back().push_back({edge.first, edge.second});
-//        } else {
-//            bridges.push_back({{{edge.first, edge.second}}});
-//            current_value = visitor.getEdgeValue(edge.first, edge.second);
-//        }
-//    }
-//
-//    bridges.erase(std::remove_if(bridges.begin(), bridges.end(), [](const std::vector<Edge>& edges) {return edges.size() < 2;}), bridges.end());
+    std::sort(edges.begin(), edges.end(), [&visitor](const WeightedEdge& left, const WeightedEdge& right)
+    {return left.weight < right.weight;});
+//    Utils::radix_sort(edges, [&visitor](const WeightedEdge& edge) {return edge.weight;});
+
+    bridges.reserve(edges.size());
+    bridges.push_back({edges[0].edge});
+    size_t current_value = edges[0].weight;
+    for (size_t i = 1; i < edges.size(); ++i) {
+        const auto& edge = edges[i];
+        if (edge.weight == current_value) {
+            bridges.back().push_back(edge.edge);
+        } else {
+            bridges.push_back({{edge.edge}});
+            current_value = edge.weight;
+        }
+    }
+
+    bridges.erase(std::remove_if(bridges.begin(), bridges.end(), [](const std::vector<Edge>& edges) {return edges.size() < 2;}), bridges.end());
     return bridges;
 }

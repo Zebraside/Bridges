@@ -10,8 +10,13 @@
 
 namespace GraphUtils {
 
-using Vertex = size_t;
+using Vertex = uint32_t;
 using Edge = std::pair<Vertex, Vertex>;
+
+struct WeightedEdge {
+    Edge edge;
+    size_t weight;
+};
 
 class IGraph {
 public:
